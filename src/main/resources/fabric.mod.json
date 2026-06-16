@@ -1,0 +1,42 @@
+{
+    "schemaVersion": 1,
+    "id": "compresso",
+    "version": "${version}",
+    "name": "Compresso",
+    "description": "Compress your screenshots into smaller PNG, WebP, JPEG & AVIF files",
+    "authors": [
+        "mudkip"
+    ],
+    "contact": {
+        "homepage": "https://modrinth.com/mod/compresso",
+        "sources": "https://github.com/mudkip/compresso",
+        "issues": "https://github.com/mudkip/compresso/issues"
+    },
+    "license": "GPL-3.0-or-later",
+    "icon": "assets/compresso/icon.png",
+    "environment": "client",
+    "entrypoints": {
+        "client": [
+            "dev.mudkip.compresso.Compresso"
+        ],
+        "modmenu": [
+            "dev.mudkip.compresso.ModMenuIntegration"
+        ]
+    },
+    "mixins": [
+        {
+            "config": "compresso.mixins.json",
+            "environment": "client"
+        }
+    ],
+    "depends": {
+        "java": ">=${jdk_version}",
+        "fabricloader": ">=${loader_version}",
+        "fabric-api": "*",
+        "minecraft": "~26.1",
+        "yet_another_config_lib_v3": "*"
+    },
+    "suggests": {
+        "modmenu": "*"
+    }
+}
