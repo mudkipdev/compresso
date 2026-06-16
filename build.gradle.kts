@@ -9,7 +9,7 @@ base {
 }
 
 group = "dev.mudkip"
-version = "1.0.0"
+version = "1.0.0+${stonecutter.current.version}-fabric"
 
 repositories {
     mavenCentral()
@@ -71,7 +71,6 @@ tasks.withType<JavaCompile>().configureEach {
 
 tasks.jar {
     from(rootProject.file("LICENSE")) {
-        rename {
-            "${it}_${base.archivesName.get()}" }
+        rename { "${it}_compresso" }
     }
 }
