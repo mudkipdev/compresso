@@ -1,8 +1,10 @@
 plugins {
-    id("net.fabricmc.fabric-loom") version "1.16-SNAPSHOT"
+    id("fabric-loom") version "1.16-SNAPSHOT"
 }
 
-val javaVersion = 25
+val obfuscated = !(findProperty("fabric.loom.disableObfuscation")?.toString()?.toBoolean() ?: false)
+val javaVersion = (property("mod.java_version") as String).toInt()
+val minecraftDependency = property("mod.minecraft_dependency") as String
 
 base {
     archivesName = "compresso"
@@ -27,12 +29,19 @@ repositories {
     }
 }
 
+val modConfiguration = if (obfuscated) "modImplementation" else "implementation"
+
 dependencies {
-    minecraft("com.mojang:minecraft:26.1.2")
-    implementation("net.fabricmc:fabric-loader:0.19.2")
-    implementation("net.fabricmc.fabric-api:fabric-api:0.146.1+26.1.2")
-    implementation("maven.modrinth:yacl:3.9.4+26.1-fabric")
-    implementation("com.terraformersmc:modmenu:18.0.0-alpha.8")
+    minecraft("com.mojang:minecraft:${stonecutter.current.version}")
+
+    if (obfuscated) {
+        "mappings"(loom.officialMojangMappings())
+    }
+
+    add(modConfiguration, "net.fabricmc:fabric-loader:${property("deps.fabric_loader")}")
+    add(modConfiguration, "net.fabricmc.fabric-api:fabric-api:${property("deps.fabric_api")}")
+    add(modConfiguration, property("deps.yacl") as String)
+    add(modConfiguration, "com.terraformersmc:modmenu:${property("deps.modmenu")}")
     include(implementation("com.github.usefulness:webp-imageio:0.11.0")!!)
 }
 
@@ -54,7 +63,8 @@ tasks.processResources {
     val properties = mapOf(
         "version" to project.version,
         "loader_version" to "0.18.4",
-        "jdk_version" to javaVersion
+        "jdk_version" to javaVersion,
+        "minecraft_dependency" to minecraftDependency
     )
 
     inputs.properties(properties)

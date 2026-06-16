@@ -66,10 +66,14 @@ public final class ConfigScreen {
         Runnable rebuild = () -> {
             options.forEach(Option::applyValue);
             var minecraft = Minecraft.getInstance();
+            //? if >=26.2 {
+            /*minecraft.execute(() -> minecraft.setScreenAndShow(create(parent)));*/
+            //?} else {
             minecraft.execute(() -> minecraft.setScreen(create(parent)));
+            //?}
         };
 
-        format.addEventListener((_, event) -> {
+        format.addEventListener((option, event) -> {
             if (event == OptionEventListener.Event.STATE_CHANGE) {
                 rebuild.run();
             }
@@ -116,7 +120,7 @@ public final class ConfigScreen {
                 .option(preferExternal)
                 .option(ButtonOption.createBuilder()
                         .name(Component.translatable("compresso.option.check_external"))
-                        .action((_, _) -> {
+                        .action((screen, button) -> {
                             Encoders.clearCache();
                             rebuild.run();
                         })
