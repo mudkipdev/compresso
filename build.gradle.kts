@@ -11,7 +11,7 @@ base {
 }
 
 group = "dev.mudkip"
-version = "1.0.0+${stonecutter.current.version}-fabric"
+version = "1.0.1+${stonecutter.current.version}-fabric"
 
 repositories {
     mavenCentral()

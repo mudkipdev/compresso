@@ -12,6 +12,7 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Util;
 import org.jspecify.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
@@ -35,8 +36,13 @@ public final class ScreenshotProcessor {
             }
 
             var window = Minecraft.getInstance().getWindow();
-            var screenWidth = window.getScreenWidth();
-            var screenHeight = window.getScreenHeight();
+            var contentScaleX = new float[1];
+            var contentScaleY = new float[1];
+            GLFW.glfwGetWindowContentScale(window.handle(), contentScaleX, contentScaleY);
+            var scaleX = contentScaleX[0] > 0 ? contentScaleX[0] : 1;
+            var scaleY = contentScaleY[0] > 0 ? contentScaleY[0] : 1;
+            var screenWidth = Math.round(window.getWidth() / scaleX);
+            var screenHeight = Math.round(window.getHeight() / scaleY);
             Util.ioPool().execute(() -> process(workingDirectory, forceName, image, screenWidth, screenHeight, ScreenshotConfig.get(), callback));
         });
     }
