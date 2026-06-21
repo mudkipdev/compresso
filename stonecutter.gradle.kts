@@ -9,3 +9,9 @@ tasks.register("buildAllVersions") {
     description = "Builds the mod for every Minecraft version"
     dependsOn(stonecutter.tasks.named("build").map { it.values })
 }
+
+tasks.register("publishAllVersions") {
+    group = "publishing"
+    description = "Publishes the mod to Modrinth for every Minecraft version"
+    dependsOn(stonecutter.tasks.named("publishMods").map { it.values })
+}

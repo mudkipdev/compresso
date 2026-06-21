@@ -1,5 +1,9 @@
+import me.modmuss50.mpp.ReleaseType
+import org.gradle.api.tasks.bundling.AbstractArchiveTask
+
 plugins {
     id("fabric-loom") version "1.16-SNAPSHOT"
+    id("me.modmuss50.mod-publish-plugin") version "2.0.0"
 }
 
 val obfuscated = !(findProperty("fabric.loom.disableObfuscation")?.toString()?.toBoolean() ?: false)
@@ -11,7 +15,7 @@ base {
 }
 
 group = "dev.mudkip"
-version = "1.0.1+${stonecutter.current.version}-fabric"
+version = "${property("mod.version")}+${stonecutter.current.version}-fabric"
 
 repositories {
     mavenCentral()
@@ -82,5 +86,26 @@ tasks.withType<JavaCompile>().configureEach {
 tasks.jar {
     from(rootProject.file("LICENSE")) {
         rename { "${it}_compresso" }
+    }
+}
+
+val publishJar = if (obfuscated) tasks.named<AbstractArchiveTask>("remapJar") else tasks.named<AbstractArchiveTask>("jar")
+val publishSourcesJar = if (obfuscated) tasks.named<AbstractArchiveTask>("remapSourcesJar") else tasks.named<AbstractArchiveTask>("sourcesJar")
+
+publishMods {
+    file = publishJar.flatMap { it.archiveFile }
+    additionalFiles.from(publishSourcesJar.flatMap { it.archiveFile })
+    displayName = "Compresso ${project.version}"
+    version = project.version.toString()
+    type = providers.environmentVariable("RELEASE_TYPE").map { ReleaseType.valueOf(it) }.orElse(ReleaseType.STABLE)
+    changelog = providers.environmentVariable("CHANGELOG").orElse("No changelog provided.")
+    modLoaders.add("fabric")
+
+    modrinth {
+        accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+        projectId = "compresso"
+        minecraftVersions.add(stonecutter.current.version)
+        requires("fabric-api", "yacl")
+        optional("modmenu")
     }
 }
