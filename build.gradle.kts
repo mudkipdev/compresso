@@ -133,7 +133,7 @@ publishMods {
 
     modrinth {
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
-        projectId = "compresso"
+        projectId = "zL3SutUq"
         minecraftVersions.add(stonecutter.current.version)
         requires("yacl")
 
