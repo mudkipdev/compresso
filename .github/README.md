@@ -11,6 +11,7 @@ Compress Minecraft screenshots into smaller PNG, WebP, JPEG &amp; AVIF files.
 </div>
 
 ## Versions
-- 1.21.11 (Fabric)
-- 26.1.x (Fabric)
-- 26.2 (Fabric)
+- 1.21.1 (Fabric, NeoForge)
+- 1.21.11 (Fabric, NeoForge)
+- 26.1.x (Fabric, NeoForge)
+- 26.2 (Fabric, NeoForge)
