@@ -61,9 +61,7 @@ dependencies {
         add(modConfiguration, "com.terraformersmc:modmenu:${property("deps.modmenu")}")
     } else {
         "neoForge"("net.neoforged:neoforge:${property("deps.neoforge")}")
-        modConfiguration(property("deps.yacl") as String) {
-            isTransitive = false
-        }
+        modConfiguration(property("deps.yacl") as String)
     }
 
     include(implementation("com.github.usefulness:webp-imageio:0.11.0")!!)
