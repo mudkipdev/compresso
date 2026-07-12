@@ -1,6 +1,7 @@
 {
     "required": true,
     "minVersion": "0.8",
+    "compatibilityLevel": "JAVA_21",
     "package": "dev.mudkip.compresso.mixin",
     "client": [
         "ScreenshotMixin"

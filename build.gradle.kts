@@ -2,9 +2,13 @@ import me.modmuss50.mpp.ReleaseType
 import org.gradle.api.tasks.bundling.AbstractArchiveTask
 
 plugins {
-    id("fabric-loom") version "1.16-SNAPSHOT"
+    id("dev.architectury.loom") version "1.17.491"
     id("me.modmuss50.mod-publish-plugin") version "2.0.0"
 }
+
+val loaderName = loom.platform.get().name.lowercase()
+val isFabric = loaderName == "fabric"
+val isNeoforge = loaderName == "neoforge"
 
 val obfuscated = !(findProperty("fabric.loom.disableObfuscation")?.toString()?.toBoolean() ?: false)
 val javaVersion = (property("mod.java_version") as String).toInt()
@@ -15,12 +19,20 @@ base {
 }
 
 group = "dev.mudkip"
-version = "${property("mod.version")}+${stonecutter.current.version}-fabric"
+version = "${property("mod.version")}+${stonecutter.current.version}-$loaderName"
+
+stonecutter {
+    constants {
+        match(loaderName, "fabric", "neoforge")
+    }
+}
 
 repositories {
     mavenCentral()
     maven("https://maven.terraformersmc.com/")
     maven("https://maven.isxander.dev/releases")
+    maven("https://maven.neoforged.net/releases")
+    maven("https://thedarkcolour.github.io/KotlinForForge/")
 
     exclusiveContent {
         forRepository {
@@ -42,11 +54,21 @@ dependencies {
         "mappings"(loom.officialMojangMappings())
     }
 
-    add(modConfiguration, "net.fabricmc:fabric-loader:${property("deps.fabric_loader")}")
-    add(modConfiguration, "net.fabricmc.fabric-api:fabric-api:${property("deps.fabric_api")}")
-    add(modConfiguration, property("deps.yacl") as String)
-    add(modConfiguration, "com.terraformersmc:modmenu:${property("deps.modmenu")}")
+    if (isFabric) {
+        add(modConfiguration, "net.fabricmc:fabric-loader:${property("deps.fabric_loader")}")
+        add(modConfiguration, "net.fabricmc.fabric-api:fabric-api:${property("deps.fabric_api")}")
+        add(modConfiguration, property("deps.yacl") as String)
+        add(modConfiguration, "com.terraformersmc:modmenu:${property("deps.modmenu")}")
+    } else {
+        "neoForge"("net.neoforged:neoforge:${property("deps.neoforge")}")
+        modConfiguration(property("deps.yacl") as String) {
+            isTransitive = false
+        }
+    }
+
     include(implementation("com.github.usefulness:webp-imageio:0.11.0")!!)
+
+    compileOnly("org.jspecify:jspecify:1.0.0")
 }
 
 loom {
@@ -68,13 +90,23 @@ tasks.processResources {
         "version" to project.version,
         "loader_version" to "0.18.4",
         "jdk_version" to javaVersion,
-        "minecraft_dependency" to minecraftDependency
+        "minecraft_dependency" to minecraftDependency,
+        "neoforge_dependency" to (findProperty("deps.neoforge_dependency") ?: "[0,)"),
+        "yacl_dependency" to (findProperty("deps.yacl_dependency") ?: "*")
     )
 
     inputs.properties(properties)
 
-    filesMatching("fabric.mod.json") {
-        expand(properties)
+    if (isFabric) {
+        filesMatching("fabric.mod.json") {
+            expand(properties)
+        }
+        exclude("META-INF/neoforge.mods.toml")
+    } else {
+        filesMatching("META-INF/neoforge.mods.toml") {
+            expand(properties)
+        }
+        exclude("fabric.mod.json")
     }
 }
 
@@ -99,13 +131,17 @@ publishMods {
     version = project.version.toString()
     type = providers.environmentVariable("RELEASE_TYPE").map { ReleaseType.valueOf(it) }.orElse(ReleaseType.STABLE)
     changelog = providers.environmentVariable("CHANGELOG").orElse("No changelog provided.")
-    modLoaders.add("fabric")
+    modLoaders.add(loaderName)
 
     modrinth {
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
         projectId = "compresso"
         minecraftVersions.add(stonecutter.current.version)
-        requires("fabric-api", "yacl")
-        optional("modmenu")
+        requires("yacl")
+
+        if (isFabric) {
+            requires("fabric-api")
+            optional("modmenu")
+        }
     }
 }

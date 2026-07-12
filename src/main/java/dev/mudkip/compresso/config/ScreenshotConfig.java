@@ -3,7 +3,6 @@ package dev.mudkip.compresso.config;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.mudkip.compresso.Compresso;
-import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -11,7 +10,12 @@ import java.nio.file.Path;
 
 public final class ScreenshotConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve("compresso.json");
+    private static final Path CONFIG_PATH =
+            //? if fabric {
+            net.fabricmc.loader.api.FabricLoader.getInstance().getConfigDir().resolve("compresso.json");
+            //?} else {
+            /*net.neoforged.fml.loading.FMLPaths.CONFIGDIR.get().resolve("compresso.json");*/
+            //?}
     private static ScreenshotConfig instance;
 
     public boolean enabled;

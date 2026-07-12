@@ -17,7 +17,7 @@
     "environment": "client",
     "entrypoints": {
         "client": [
-            "dev.mudkip.compresso.Compresso"
+            "dev.mudkip.compresso.CompressoFabric"
         ],
         "modmenu": [
             "dev.mudkip.compresso.ModMenuIntegration"

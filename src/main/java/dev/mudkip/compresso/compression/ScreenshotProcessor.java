@@ -10,7 +10,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
+//? if >=1.21.11 {
 import net.minecraft.util.Util;
+//?} else {
+/*import net.minecraft.Util;*/
+//?}
 import org.jspecify.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
@@ -27,7 +31,12 @@ public final class ScreenshotProcessor {
 
     }
 
-    public static void grab(File workingDirectory, @Nullable String forceName, RenderTarget target, int downscaleFactor, Consumer<Component> callback) {
+    public static void grab(File workingDirectory, @Nullable String forceName, RenderTarget target,
+            //? if >=1.21.11 {
+            int downscaleFactor,
+            //?}
+            Consumer<Component> callback) {
+        //? if >=1.21.11 {
         Screenshot.takeScreenshot(target, downscaleFactor, nativeImage -> {
             BufferedImage image;
 
@@ -35,16 +44,34 @@ public final class ScreenshotProcessor {
                 image = toBufferedImage(nativeImage);
             }
 
-            var window = Minecraft.getInstance().getWindow();
-            var contentScaleX = new float[1];
-            var contentScaleY = new float[1];
-            GLFW.glfwGetWindowContentScale(window.handle(), contentScaleX, contentScaleY);
-            var scaleX = contentScaleX[0] > 0 ? contentScaleX[0] : 1;
-            var scaleY = contentScaleY[0] > 0 ? contentScaleY[0] : 1;
-            var screenWidth = Math.round(window.getWidth() / scaleX);
-            var screenHeight = Math.round(window.getHeight() / scaleY);
-            Util.ioPool().execute(() -> process(workingDirectory, forceName, image, screenWidth, screenHeight, ScreenshotConfig.get(), callback));
+            dispatch(workingDirectory, forceName, image, callback);
         });
+        //?} else {
+        /*var nativeImage = Screenshot.takeScreenshot(target);
+        BufferedImage image;
+
+        try (nativeImage) {
+            image = toBufferedImage(nativeImage);
+        }
+
+        dispatch(workingDirectory, forceName, image, callback);
+        *///?}
+    }
+
+    private static void dispatch(File workingDirectory, @Nullable String forceName, BufferedImage image, Consumer<Component> callback) {
+        var window = Minecraft.getInstance().getWindow();
+        var contentScaleX = new float[1];
+        var contentScaleY = new float[1];
+        //? if >=1.21.11 {
+        GLFW.glfwGetWindowContentScale(window.handle(), contentScaleX, contentScaleY);
+        //?} else {
+        /*GLFW.glfwGetWindowContentScale(window.getWindow(), contentScaleX, contentScaleY);
+        *///?}
+        var scaleX = contentScaleX[0] > 0 ? contentScaleX[0] : 1;
+        var scaleY = contentScaleY[0] > 0 ? contentScaleY[0] : 1;
+        var screenWidth = Math.round(window.getWidth() / scaleX);
+        var screenHeight = Math.round(window.getHeight() / scaleY);
+        Util.ioPool().execute(() -> process(workingDirectory, forceName, image, screenWidth, screenHeight, ScreenshotConfig.get(), callback));
     }
 
     private static void process(File workingDirectory, @Nullable String forceName, BufferedImage source, int screenWidth, int screenHeight, ScreenshotConfig config, Consumer<Component> callback) {
@@ -78,7 +105,11 @@ public final class ScreenshotProcessor {
     private static BufferedImage toBufferedImage(NativeImage nativeImage) {
         var width = nativeImage.getWidth();
         var height = nativeImage.getHeight();
+        //? if >=1.21.11 {
         var pixels = nativeImage.getPixels();
+        //?} else {
+        /*var pixels = nativeImage.makePixelArray();
+        *///?}
         var image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         image.setRGB(0, 0, width, height, pixels, 0, width);
         return image;
@@ -123,7 +154,11 @@ public final class ScreenshotProcessor {
     private static Component savedMessage(File file, long fileBytes) {
         Component link = Component.literal(file.getName())
                 .withStyle(ChatFormatting.UNDERLINE)
+                //? if >=1.21.11 {
                 .withStyle(style -> style.withClickEvent(new ClickEvent.OpenFile(file.getAbsoluteFile())));
+                //?} else {
+                /*.withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file.getAbsolutePath())));
+                *///?}
 
         return Component.translatable("screenshot.success", link)
                 .append(Component.literal(" (" + formatBytes(fileBytes) + ")").withStyle(ChatFormatting.GRAY));

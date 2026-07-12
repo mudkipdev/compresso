@@ -1,0 +1,36 @@
+modLoader = "javafml"
+loaderVersion = "[1,)"
+license = "GPL-3.0-or-later"
+issueTrackerURL = "https://github.com/mudkip/compresso/issues"
+
+[[mods]]
+modId = "compresso"
+version = "${version}"
+displayName = "Compresso"
+authors = "mudkip"
+description = "Compress your screenshots into smaller PNG, WebP, JPEG & AVIF files"
+logoFile = "assets/compresso/icon.png"
+
+[[mixins]]
+config = "compresso.mixins.json"
+
+[[dependencies.compresso]]
+modId = "neoforge"
+type = "required"
+versionRange = "${neoforge_dependency}"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.compresso]]
+modId = "minecraft"
+type = "required"
+versionRange = "${minecraft_dependency}"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.compresso]]
+modId = "yet_another_config_lib_v3"
+type = "required"
+versionRange = "${yacl_dependency}"
+ordering = "AFTER"
+side = "CLIENT"
