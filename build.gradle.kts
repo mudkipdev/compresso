@@ -61,7 +61,11 @@ dependencies {
         add(modConfiguration, "com.terraformersmc:modmenu:${property("deps.modmenu")}")
     } else {
         "neoForge"("net.neoforged:neoforge:${property("deps.neoforge")}")
-        modConfiguration(property("deps.yacl") as String)
+        modConfiguration(property("deps.yacl") as String) {
+            isTransitive = false
+        }
+        "forgeRuntimeLibrary"("org.quiltmc.parsers:json:0.2.1")
+        "forgeRuntimeLibrary"("org.quiltmc.parsers:gson:0.2.1")
     }
 
     include(implementation("com.github.usefulness:webp-imageio:0.11.0")!!)
