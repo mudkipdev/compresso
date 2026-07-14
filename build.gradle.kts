@@ -66,6 +66,7 @@ dependencies {
         }
         "forgeRuntimeLibrary"("org.quiltmc.parsers:json:0.2.1")
         "forgeRuntimeLibrary"("org.quiltmc.parsers:gson:0.2.1")
+        "forgeRuntimeLibrary"("com.github.usefulness:webp-imageio:0.11.0")
     }
 
     include(implementation("com.github.usefulness:webp-imageio:0.11.0")!!)
