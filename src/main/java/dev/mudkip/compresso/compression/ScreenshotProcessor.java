@@ -16,7 +16,9 @@ import net.minecraft.util.Util;
 /*import net.minecraft.Util;*/
 //?}
 import org.jspecify.annotations.Nullable;
+//? if <26.3 {
 import org.lwjgl.glfw.GLFW;
+//?}
 
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
@@ -60,6 +62,10 @@ public final class ScreenshotProcessor {
 
     private static void dispatch(File workingDirectory, @Nullable String forceName, BufferedImage image, Consumer<Component> callback) {
         var window = Minecraft.getInstance().getWindow();
+        //? if >=26.3 {
+        /*var screenWidth = window.getScreenWidth();
+        var screenHeight = window.getScreenHeight();
+        *///?} else {
         var contentScaleX = new float[1];
         var contentScaleY = new float[1];
         //? if >=1.21.11 {
@@ -71,6 +77,7 @@ public final class ScreenshotProcessor {
         var scaleY = contentScaleY[0] > 0 ? contentScaleY[0] : 1;
         var screenWidth = Math.round(window.getWidth() / scaleX);
         var screenHeight = Math.round(window.getHeight() / scaleY);
+        //?}
         Util.ioPool().execute(() -> process(workingDirectory, forceName, image, screenWidth, screenHeight, ScreenshotConfig.get(), callback));
     }
 
